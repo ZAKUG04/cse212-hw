@@ -11,7 +11,10 @@ public class TakingTurnsQueueTests
     // Scenario: Create a queue with the following people and turns: Bob (2), Tim (5), Sue (3) and
     // run until the queue is empty
     // Expected Result: Bob, Tim, Sue, Bob, Tim, Sue, Tim, Sue, Tim, Tim
-    // Defect(s) Found: 
+    // Defect(s) Found: The queue was not maintaining FIFO order because the Enqueue
+    // method in PersonQueue inserted elements at the beginning of the list instead
+    // of the end. This caused players to appear in the wrong order when retrieving
+    // them from the queue.
     public void TestTakingTurnsQueue_FiniteRepetition()
     {
         var bob = new Person("Bob", 2);
@@ -43,7 +46,9 @@ public class TakingTurnsQueueTests
     // Scenario: Create a queue with the following people and turns: Bob (2), Tim (5), Sue (3)
     // After running 5 times, add George with 3 turns.  Run until the queue is empty.
     // Expected Result: Bob, Tim, Sue, Bob, Tim, Sue, Tim, George, Sue, Tim, George, Tim, George
-    // Defect(s) Found: 
+    // Defect(s) Found:When players were re-added to the queue after taking a turn,
+    // they were inserted at the front instead of the back. This broke the expected
+    // order of players, especially when a new player was added during execution. 
     public void TestTakingTurnsQueue_AddPlayerMidway()
     {
         var bob = new Person("Bob", 2);
@@ -85,7 +90,9 @@ public class TakingTurnsQueueTests
     // Scenario: Create a queue with the following people and turns: Bob (2), Tim (Forever), Sue (3)
     // Run 10 times.
     // Expected Result: Bob, Tim, Sue, Bob, Tim, Sue, Tim, Sue, Tim, Tim
-    // Defect(s) Found: 
+    // Defect(s) Found:The incorrect enqueue logic caused players with infinite
+    // turns (turns = 0) to appear in the wrong order because they were placed at
+    // the front of the queue instead of the back.
     public void TestTakingTurnsQueue_ForeverZero()
     {
         var timTurns = 0;
@@ -116,7 +123,9 @@ public class TakingTurnsQueueTests
     // Scenario: Create a queue with the following people and turns: Tim (Forever), Sue (3)
     // Run 10 times.
     // Expected Result: Tim, Sue, Tim, Sue, Tim, Sue, Tim, Tim, Tim, Tim
-    // Defect(s) Found: 
+    // Defect(s) Found: Players with negative turns should remain in the queue
+    // indefinitely, but the incorrect queue insertion logic caused them to be
+    // placed in the wrong position, resulting in incorrect ordering.
     public void TestTakingTurnsQueue_ForeverNegative()
     {
         var timTurns = -3;
@@ -143,7 +152,9 @@ public class TakingTurnsQueueTests
     [TestMethod]
     // Scenario: Try to get the next person from an empty queue
     // Expected Result: Exception should be thrown with appropriate error message.
-    // Defect(s) Found: 
+    // Defect(s) Found:  No defects were found. The method correctly throws an
+    // InvalidOperationException when attempting to retrieve a person from
+    // an empty queue.
     public void TestTakingTurnsQueue_Empty()
     {
         var players = new TakingTurnsQueue();
