@@ -21,8 +21,23 @@ public static class SetsAndMaps
     /// <param name="words">An array of 2-character words (lowercase, no duplicates)</param>
     public static string[] FindPairs(string[] words)
     {
-        // TODO Problem 1 - ADD YOUR CODE HERE
-        return [];
+        var set = new HashSet<string>(words);
+        var result = new List<string>();
+        var used = new HashSet<string>();
+
+        foreach (var word in words)
+        {
+            var reversed = new string(word.Reverse().ToArray());
+            if (word == reversed)
+                continue;
+            if (set.Contains(reversed) && !used.Contains(word) && !used.Contains(reversed))
+            {
+                result.Add($"{word} & {reversed}");
+                used.Add(word);
+                used.Add(reversed);
+            }
+        }
+        return result.ToArray();
     }
 
     /// <summary>
@@ -41,8 +56,18 @@ public static class SetsAndMaps
         var degrees = new Dictionary<string, int>();
         foreach (var line in File.ReadLines(filename))
         {
+            if (string.IsNullOrWhiteSpace(line))
+                continue;
             var fields = line.Split(",");
-            // TODO Problem 2 - ADD YOUR CODE HERE
+            if (fields.Length < 4)
+                continue;
+
+            string degree = fields[3].Trim();
+            if (!degrees.ContainsKey(degree))
+            {
+                degrees[degree] = 0;
+            }
+            degrees[degree]++;
         }
 
         return degrees;
@@ -66,8 +91,34 @@ public static class SetsAndMaps
     /// </summary>
     public static bool IsAnagram(string word1, string word2)
     {
-        // TODO Problem 3 - ADD YOUR CODE HERE
-        return false;
+        word1 = word1.Replace(" ", "").ToLower();
+        word2 = word2.Replace(" ", "").ToLower();
+
+        if (word1.Length != word2.Length)
+            return false;
+
+        var dict = new Dictionary<char, int>();
+        foreach (char c in word1)
+        {
+            if (!dict.ContainsKey(c))
+                dict[c] = 0;
+
+            dict[c]++;
+        }
+        foreach (char c in word2)
+        {
+            if (!dict.ContainsKey(c))
+                return false;
+
+            dict[c]--;
+        }
+        foreach (var value in dict.Values)
+        {
+            if (value != 0)
+                return false;
+        }
+
+        return true;
     }
 
     /// <summary>
